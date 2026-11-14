@@ -23,13 +23,13 @@ Then enable **PF2e Scene Vision Range** in the world's *Manage Modules*, open a 
 
 ## Compatibility
 
-- Foundry VTT v14
-- PF2e system 8.x (verified against 8.4.0)
+- Foundry VTT v12, v13 and v14. It has been tested in-game on v14. The v12 and v13 support was written from PF2e's 6.12 and 7.8 source.
+- PF2e system 6.x (Foundry v12), 7.x (v13) and 8.x (v14). Verified against 8.4.0.
 
 ## How it works
 
 - The value is stored as the scene flag `flags.pf2e-scene-vision-range.visionRange`, in scene units.
-- `TokenDocument#prepareData` is wrapped. That method already includes PF2e's rules-based vision and token active effects. After it runs, the wrapper caps `sight.range` and the `range` of every detection mode whose type is `SIGHT`.
+- `TokenDocument#prepareData` is wrapped. That method already includes PF2e's rules-based vision and token active effects. After it runs, the wrapper caps `sight.range` and the `range` of every detection mode whose type is `SIGHT`. On v14, detection modes are keyed by id. On v12 and v13 they are an array, and a `null` range means unlimited.
 - When the flag changes, the scene's tokens are re-prepared and vision is rebuilt for everyone viewing that scene.
 
 ## Development

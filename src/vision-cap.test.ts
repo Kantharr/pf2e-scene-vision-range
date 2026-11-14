@@ -69,6 +69,26 @@ describe("capVision", () => {
     expect(modes.basicSight!.range).toBe(20);
   });
 
+  it("handles the v12/v13 array form with null meaning unlimited", () => {
+    const sight = { enabled: true, range: null };
+    const modes = [
+      { id: "lightPerception", enabled: true, range: null },
+      { id: "basicSight", enabled: true, range: null },
+      { id: "seeInvisibility", enabled: true, range: null },
+      { id: "feelTremor", enabled: true, range: 60 },
+      { id: "hearing", enabled: true, range: null },
+    ];
+    capVision(sight, modes, 30, isSight);
+    expect(sight.range).toBe(30);
+    expect(modes.map((m) => [m.id, m.range])).toEqual([
+      ["lightPerception", 30],
+      ["basicSight", 30],
+      ["seeInvisibility", 30],
+      ["feelTremor", 60],
+      ["hearing", null],
+    ]);
+  });
+
   it("is idempotent", () => {
     const sight = { enabled: true, range: Infinity };
     const modes: Record<string, DetectionModeData> = { lightPerception: { enabled: true, range: Infinity } };

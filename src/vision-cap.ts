@@ -7,6 +7,14 @@ export interface DetectionModeData {
   range?: number | null;
 }
 
+/**
+ * TokenDocument#detectionModes. Foundry v14 keys them by mode id; v12 and v13
+ * use an array of `{id, enabled, range}` entries.
+ */
+export type DetectionModes =
+  | Record<string, DetectionModeData | undefined>
+  | Array<(DetectionModeData & { id?: string }) | undefined>;
+
 /** The parts of TokenDocument#sight this module touches. */
 export interface SightData {
   enabled?: boolean;
@@ -39,12 +47,15 @@ function capRange(range: number | null | undefined, cap: number): number {
  */
 export function capVision(
   sight: SightData,
-  detectionModes: Record<string, DetectionModeData | undefined>,
+  detectionModes: DetectionModes,
   cap: number,
   isSightMode: (id: string) => boolean,
 ): void {
   sight.range = capRange(sight.range, cap);
-  for (const [id, mode] of Object.entries(detectionModes)) {
+  const entries: Array<[string, DetectionModeData | undefined]> = Array.isArray(detectionModes)
+    ? detectionModes.map((mode) => [mode?.id ?? "", mode])
+    : Object.entries(detectionModes);
+  for (const [id, mode] of entries) {
     if (!mode || !isSightMode(id)) continue;
     mode.range = capRange(mode.range, cap);
   }

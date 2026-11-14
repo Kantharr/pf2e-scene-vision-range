@@ -1,5 +1,5 @@
 import { FLAG_KEY, FLAG_PATH, MODULE_ID } from "./constants.js";
-import { capVision, parseVisionRange, type DetectionModeData, type SightData } from "./vision-cap.js";
+import { capVision, parseVisionRange, type DetectionModes, type SightData } from "./vision-cap.js";
 import { injectVisionRangeField } from "./scene-config.js";
 
 // Minimal shapes for the Foundry objects this module touches. fvtt-types is
@@ -14,7 +14,7 @@ interface TokenDocLike {
   parent?: SceneLike | null;
   actor?: { hasPlayerOwner?: boolean } | null;
   sight: SightData;
-  detectionModes: Record<string, DetectionModeData | undefined>;
+  detectionModes: DetectionModes;
   reset(): void;
 }
 
@@ -60,10 +60,13 @@ let sightType: number | undefined;
 
 /** True for detection modes that depend on sight (light perception, darkvision, see invisibility, ...). */
 function isSightMode(id: string): boolean {
+  // v13+: foundry.canvas.perception.DetectionMode; v12: global DetectionMode.
+  type DetectionModeClass = { DETECTION_TYPES?: { SIGHT?: number } };
   sightType ??=
-    (foundry as unknown as {
-      canvas?: { perception?: { DetectionMode?: { DETECTION_TYPES?: { SIGHT?: number } } } };
-    }).canvas?.perception?.DetectionMode?.DETECTION_TYPES?.SIGHT ?? 0;
+    (foundry as unknown as { canvas?: { perception?: { DetectionMode?: DetectionModeClass } } }).canvas
+      ?.perception?.DetectionMode?.DETECTION_TYPES?.SIGHT ??
+    (globalThis as { DetectionMode?: DetectionModeClass }).DetectionMode?.DETECTION_TYPES?.SIGHT ??
+    0;
   return fvtt.config.Canvas.detectionModes[id]?.type === sightType;
 }
 

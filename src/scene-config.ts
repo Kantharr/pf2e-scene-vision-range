@@ -3,6 +3,8 @@ import { parseVisionRange } from "./vision-cap.js";
 
 interface SceneConfigLike {
   id?: string;
+  /** ApplicationV1 (Foundry v12) only. */
+  setPosition?: (position: { height: "auto" }) => unknown;
   document?: {
     id?: string;
     flags?: Record<string, Record<string, unknown> | undefined>;
@@ -22,8 +24,13 @@ function format(key: string, data: Record<string, string>): string {
  * Insert the "Player Vision Range" field into PF2e's Pathfinder tab of the
  * scene config, right after the system's Hearing Range field. Re-renders of
  * the tab replace its DOM, and this runs again on each render hook.
+ *
+ * Foundry v13+ (ApplicationV2) passes an HTMLElement; v12 (ApplicationV1)
+ * passes a jQuery object wrapping the window.
  */
-export function injectVisionRangeField(app: unknown, element: unknown): void {
+export function injectVisionRangeField(app: unknown, html: unknown): void {
+  const isJQuery = !(html instanceof HTMLElement);
+  const element = isJQuery ? (html as { [index: number]: unknown } | null)?.[0] : html;
   if (!(element instanceof HTMLElement)) return;
   const sheet = app as SceneConfigLike;
   const scene = sheet.document;
@@ -67,4 +74,7 @@ export function injectVisionRangeField(app: unknown, element: unknown): void {
   const hearing = tab.querySelector(`[name="flags.${REQUIRED_SYSTEM_ID}.hearingRange"]`)?.closest(".form-group");
   if (hearing) hearing.after(group);
   else tab.append(group);
+
+  // v12 sizes the window before render hooks run; grow it if this tab is showing.
+  if (isJQuery && tab.classList.contains("active")) sheet.setPosition?.({ height: "auto" });
 }
