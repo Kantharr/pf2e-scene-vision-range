@@ -1,0 +1,6 @@
+{
+  "PF2E_SCENE_VISION.Field.Label": "Player Vision Range",
+  "PF2E_SCENE_VISION.Field.LabelUnits": "Player Vision Range ({units})",
+  "PF2E_SCENE_VISION.Field.Unlimited": "Unlimited",
+  "PF2E_SCENE_VISION.Field.Hint": "Player-owned tokens on this scene cannot see farther than this, even in bright light or with darkvision. Senses that are already shorter, and non-visual senses like hearing and tremorsense, are not changed. Leave blank for no limit."
+}
