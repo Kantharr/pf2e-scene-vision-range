@@ -1,6 +1,6 @@
 {
   "name": "pf2e-scene-vision-range",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "FoundryVTT (PF2e) module: per-scene cap on player token vision range.",
   "private": true,
   "type": "module",
